@@ -1,0 +1,20 @@
+{
+  "name": "estrella",
+  "version": "1.0.0",
+  "description": "A memory game based on memes\\(``/)\\/.",
+  "main": "\\",
+  "scripts": {
+    "start": "http-server -c-1",
+    "test": "\\"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/\\/web-01"
+  },
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
