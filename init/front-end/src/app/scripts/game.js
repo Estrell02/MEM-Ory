@@ -1,5 +1,6 @@
-import template from "../views/game.html"
+import template from "../views/game.html";
 import { parseUrl } from "./utils";
+import { Component } from "./component";
 import back from "/src/assets/cards/back.png";
 import card0 from "/src/assets/cards/card-0.png";
 import card1 from "/src/assets/cards/card-1.png";
@@ -19,41 +20,30 @@ var CARD_TEMPLATE = ""
   .concat("  </div>")
   .concat("</main>");
 
+var environment = {
+  api: {
+    host: "http://localhost:8081",
+  },
+};
 
+/* class GameComponent constructor */
 
-  var environment = {
-    api: {
-      host: "http://localhost:8081",
-    },
-  };
+export class GameComponent extends Component {
+  constructor() {
+    super(template);
 
-  
-  // TODO #class: use the ES6 class keyword
-  // TODO #extends: extend Component
-  /* class GameComponent constructor */
-
-  export function GameComponent() {
-   
-    // TODO #extends: call super(template)
     // gather parameters from URL
     var params = parseUrl();
 
     // TODO #import-html: assign template to this.template
-    this.template = template;
+
     // save player name & game ize
     this._name = params.name;
     this._size = parseInt(params.size) || 9;
     this._flippedCard = null;
     this._matchedPairs = 0;
   }
-
-  
-  // put component in global scope, to be runnable right from the HTML.
-  
-
-  // TODO #class: turn function into a method of GameComponent
-  /* method GameComponent.init */
-  GameComponent.prototype.init = function init() {
+  init() {
     // fetch the cards configuration from the server
     this.fetchConfig(
       // TODO #arrow-function: use arrow function instead.
@@ -80,11 +70,8 @@ var CARD_TEMPLATE = ""
         this.start();
       }.bind(this)
     );
-  };
-  // TODO #class: turn function into a method of GameComponent
-
-  /* method GameComponent._appendCard */
-  GameComponent.prototype._appendCard = function _appendCard(card) {
+  }
+  _appendCard(card) {
     this._boardElement.appendChild(card.getElement());
 
     card.getElement().addEventListener(
@@ -94,11 +81,8 @@ var CARD_TEMPLATE = ""
         this._flipCard(card);
       }.bind(this)
     );
-  };
-
-  // TODO #class: turn function into a method of GameComponent
-  /* method GameComponent.start */
-  GameComponent.prototype.start = function start() {
+  }
+  start() {
     this._startTime = Date.now();
     var seconds = 0;
     // TODO #template-literals:  use template literals (backquotes)
@@ -114,41 +98,9 @@ var CARD_TEMPLATE = ""
       }.bind(this),
       1000
     );
-  };
+  }
 
-  // TODO #class: turn function into a method of GameComponent
-  /* method GameComponent.fetchConfig */
-  GameComponent.prototype.fetchConfig = function fetchConfig(cb) {
-    var xhr =
-      typeof XMLHttpRequest != "undefined"
-        ? new XMLHttpRequest()
-        : new ActiveXObject("Microsoft.XMLHTTP");
-
-    // TODO #template-literals:  use template literals (backquotes)
-    xhr.open("get", environment.api.host + "/board?size=" + this._size, true);
-
-    // TODO #arrow-function: use arrow function instead.
-    xhr.onreadystatechange = function () {
-      var status;
-      var data;
-      // https://xhr.spec.whatwg.org/#dom-xmlhttprequest-readystate
-      if (xhr.readyState == 4) {
-        // `DONE`
-        status = xhr.status;
-        if (status == 200) {
-          data = JSON.parse(xhr.responseText);
-          cb(data);
-        } else {
-          throw new Error(status);
-        }
-      }
-    };
-    xhr.send();
-  };
-
-  // TODO #class: turn function into a method of GameComponent
-  /* method GameComponent.goToScore */
-  GameComponent.prototype.goToScore = function goToScore() {
+  goToScore() {
     var timeElapsedInSeconds = Math.floor(
       (Date.now() - this._startTime) / 1000
     );
@@ -171,11 +123,9 @@ var CARD_TEMPLATE = ""
       }.bind(this),
       750
     );
-  };
+  }
 
-  // TODO #class: turn function into a method of GameComponent
-  /* method GameComponent._flipCard */
-  GameComponent.prototype._flipCard = function _flipCard(card) {
+  _flipCard(card) {
     if (this._busy) {
       return;
     }
@@ -226,47 +176,62 @@ var CARD_TEMPLATE = ""
         );
       }
     }
-  };
+  }
 
-  // TODO #card-component: Change images location to /app/components/game/card/assets/***.png
-  // TODO #import-assets: use ES default import to import images.
-  // var CARDS_IMAGE = [
-  //   "/src/assets/cards/back.png",
-  //   "/src/assets/cards/card-0.png",
-  //   "/src/assets/cards/card-1.png",
-  //   "/src/assets/cards/card-2.png",
-  //   "/src/assets/cards/card-3.png",
-  //   "/src/assets/cards/card-4.png",
-  //   "/src/assets/cards/card-5.png",
-  //   "/src/assets/cards/card-6.png",
-  //   "/src/assets/cards/card-7.png",
-  //   "/src/assets/cards/card-8.png",
-  //   "/src/assets/cards/card-9.png",
-  // ];
- 
+  fetchConfig(cb) {
+    var xhr =
+      typeof XMLHttpRequest != "undefined"
+        ? new XMLHttpRequest()
+        : new ActiveXObject("Microsoft.XMLHTTP");
 
-  var CARDS_IMAGE = [
-    back,
-    card0,
-    card1,
-    card2,
-    card3,
-    card4,
-    card5,
-    card6,
-    card7,
-    card8,
-    card9,
-  ]; 
+    // TODO #template-literals:  use template literals (backquotes)
+    xhr.open("get", environment.api.host + "/board?size=" + this._size, true);
 
-  // TODO #class: use the ES6 class keyword
-  // TODO #extends: extends Component
-  /* class CardComponent constructor */
-  function CardComponent(id) {
-    // TODO #extends: call super(CARD_TEMPLATE)
-    // is this card flipped?
+    // TODO #arrow-function: use arrow function instead.
+    xhr.onreadystatechange = function () {
+      var status;
+      var data;
+      // https://xhr.spec.whatwg.org/#dom-xmlhttprequest-readystate
+      if (xhr.readyState == 4) {
+        // `DONE`
+        status = xhr.status;
+        if (status == 200) {
+          data = JSON.parse(xhr.responseText);
+          cb(data);
+        } else {
+          throw new Error(status);
+        }
+      }
+    };
+    xhr.send();
+  }
+}
+
+// put component in global scope, to be runnable right from the HTML.
+
+// TODO #card-component: Change images location to /app/components/game/card/assets/***.png
+// TODO #import-assets: use ES default import to import images.
+
+var CARDS_IMAGE = [
+  back,
+  card0,
+  card1,
+  card2,
+  card3,
+  card4,
+  card5,
+  card6,
+  card7,
+  card8,
+  card9,
+];
+
+/* class CardComponent constructor */
+export class CardComponent extends Component {
+  // is this card flipped?
+  constructor(id) {
+    super(CARD_TEMPLATE);
     this._flipped = false;
-    this.template = CARD_TEMPLATE;
 
     // has the matching card has been discovered already?
     this.matched = false;
@@ -282,31 +247,20 @@ var CARD_TEMPLATE = ""
     this._imageElt.querySelector("img.back-face").src = CARDS_IMAGE[0];
   }
 
-  /* method CardComponent.getElement */
-  CardComponent.prototype.getElement = function getElement() {
+  getElement() {
     return this._elt;
-  };
+  }
 
-  // TODO #class: turn function into a method of CardComponent
-  /* method CardComponent.flip */
-  CardComponent.prototype.flip = function flip() {
+  flip() {
     this._imageElt.classList.toggle("flip");
     this._flipped = !this._flipped;
-  };
+  }
 
-  // TODO #class: turn function into a method of CardComponent
-  /* method CardComponent.equals */
-  CardComponent.prototype.equals = function equals(card) {
+  equals(card) {
     return card._id === this._id;
-  };
+  }
 
-  // TODO #class: turn function into a method of CardComponent
-  /* CardComponent.get flipped() */
-  Object.defineProperties(CardComponent.prototype, {
-    flipped: {
-      get: function () {
-        return this._flipped;
-      },
-    },
-  });
-
+  get flipped() {
+    return this._flipped;
+  }
+}
