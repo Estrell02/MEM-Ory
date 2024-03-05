@@ -10,7 +10,7 @@ export class WelcomeComponent extends Component {
   }
 
   init() {
-    var form = document.querySelector("form.form-signin");
+    const form = document.querySelector("form.form-signin");
 
     form.addEventListener(
       "submit",
@@ -21,8 +21,8 @@ export class WelcomeComponent extends Component {
           event.stopPropagation();
           form.classList.add("was-validated");
         } else {
-          var name = event.srcElement.querySelector("#nickname").value;
-          var size = parseInt(event.srcElement.querySelector("#size").value);
+          let name = event.srcElement.querySelector("#nickname").value;
+          let size = parseInt(event.srcElement.querySelector("#size").value);
 
           this._startGame(name, size);
         }
@@ -34,7 +34,7 @@ export class WelcomeComponent extends Component {
   }
 
   _startGame(name, size) {
-    var gamePage = "./#game";
+    const gamePage = "./#game";
     // TODO #template-literals:  use template literals (backquotes)
     window.location = gamePage + "?name=" + name + "&size=" + size;
   }

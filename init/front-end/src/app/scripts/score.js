@@ -6,7 +6,7 @@ import {Component} from "./component";
  export class ScoreComponent extends Component{
    
    constructor(){
-    var params = parseUrl();
+    const params = parseUrl();
     // TODO #import-html: assign template to this.template
     super(template);
     this.name = params.name;
