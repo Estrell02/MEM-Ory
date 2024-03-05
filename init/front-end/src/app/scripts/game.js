@@ -35,8 +35,6 @@ export class GameComponent extends Component {
     // gather parameters from URL
     const params = parseUrl();
 
-    // TODO #import-html: assign template to this.template
-
     // save player name & game ize
     this._name = params.name;
     this._size = parseInt(params.size) || 9;
@@ -59,7 +57,7 @@ export class GameComponent extends Component {
         }
 
         // TODO #functional-programming: use Array.forEach() instead.
-        // TODO #let-const: replace var with let.
+
         for (let i in this._cards) {
           let card = this._cards[i];
           this._boardElement.appendChild(card.getElement());
@@ -82,42 +80,28 @@ export class GameComponent extends Component {
     let seconds = 0;
     // TODO #template-literals:  use template literals (backquotes)
     document.querySelector("nav .navbar-title").textContent =
-      "Player: " + this._name + ". Elapsed time: " + seconds++;
+      `Player: ${this._name }. Elapsed time:${seconds++}`;
 
     this._timer = setInterval(
-      // TODO #arrow-function: use arrow function instead.
-      function () {
-        // TODO #template-literals:  use template literals (backquotes)
+     () => {
         document.querySelector("nav .navbar-title").textContent =
-          "Player: " + this._name + ". Elapsed time: " + seconds++;
-      }.bind(this),
+        `Player: ${this._name }. Elapsed time:${seconds++}`;
+      },
       1000
     );
   }
 
   goToScore() {
-    var timeElapsedInSeconds = Math.floor(
+    let timeElapsedInSeconds = Math.floor(
       (Date.now() - this._startTime) / 1000
     );
     clearInterval(this._timer);
 
-    setTimeout(
-      // TODO #arrow-function: use arrow function instead.
-      function () {
-
-        const scorePage = "./#score";
-        // TODO #template-literals:  use template literals (backquotes)
-        window.location =
-          scorePage +
-          "?name=" +
-          this._name +
-          "&size=" +
-          this._size +
-          "&time=" +
-          timeElapsedInSeconds;
-      }.bind(this),
-      750
-    );
+    setTimeout(() => {
+      let scorePage = "./#score";
+      // TODO #template-literals:  use template literals (backquotes)
+      window.location = `${scorePage}?name=${this._name}&size=${this._size}&time=${timeElapsedInSeconds}`;
+    }, 750);
   }
 
   _flipCard(card) {
@@ -156,19 +140,15 @@ export class GameComponent extends Component {
 
         // cards did not match
         // wait a short amount of time before hiding both cards
-        setTimeout(
-          // TODO #arrow-function: use arrow function instead.
-          function () {
-            // hide the cards
-            this._flippedCard.flip();
-            card.flip();
-            this._busy = false;
+        setTimeout(() => {
+          // hide the cards
+          this._flippedCard.flip();
+          card.flip();
+          this._busy = false;
 
-            // reset flipped card for the next turn.
-            this._flippedCard = null;
-          }.bind(this),
-          500
-        );
+          // reset flipped card for the next turn.
+          this._flippedCard = null;
+        }, 500);
       }
     }
   }
