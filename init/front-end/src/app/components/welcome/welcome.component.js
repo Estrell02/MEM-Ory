@@ -1,6 +1,8 @@
 // TODO #import-html: use ES default imports to import welcome.html as template
-import template from "../views/welcome.html";
-import { Component } from "./component";
+import template from "../welcome/welcome.component.html";
+import { Component } from "../../scripts/component";
+
+import "./welcome.component.css";
 
 /* class WelcomeComponent constructor  */
 export class WelcomeComponent extends Component {
@@ -14,7 +16,7 @@ export class WelcomeComponent extends Component {
 
     form.addEventListener(
       "submit",
-      // TODO #arrow-function: use arrow function instead.
+
       (event) => {
         event.preventDefault();
         if (form.checkValidity() === false) {
@@ -40,6 +42,5 @@ export class WelcomeComponent extends Component {
   }
 }
 
-// TODO #export-functions: remove this line
 // put component in global scope, to be runnable right from the HTML.
 window.WelcomeComponent = WelcomeComponent;
