@@ -20,7 +20,7 @@ init() {
   };
   }
 
-  // TODO #export-functions: remove this line
+  
   // put component in global scope, to be runnable right from the HTML.
   window.ScoreComponent = ScoreComponent;
 
