@@ -3,6 +3,8 @@ import { Component } from "../../scripts/component";
 import { CardComponent } from "./card/card.component";
 import template from "./game.component.html";
 import "./game.component.css";
+import * as localforage from "localforage/dist/localforage";
+
 
 var environment = {
   api: {
@@ -14,8 +16,7 @@ var environment = {
 
 export class GameComponent extends Component {
   constructor() {
-    super(template);
-
+    super(template)
     // gather parameters from URL
     const params = parseUrl();
 
@@ -26,63 +27,100 @@ export class GameComponent extends Component {
     this._matchedPairs = 0;
   }
 
+  /* method GameComponent.init */
   async init() {
-    // fetch the cards configuration from the server
+    this._cards = JSON.parse(await localforage.getItem("cards"));
+    this._matchedPairs = JSON.parse(await localforage.getItem("score")) || 0;
 
-    this._config = await this.fetchConfig();
-    this._boardElement = document.querySelector(".cards");
-    this._cards = [];
-    // create cards out of the config
-    this._cards = this._config.ids.map((id) => new CardComponent(id));
-    this._cards.forEach((card) => {
-      this._boardElement.appendChild(card.getElement());
-      card.getElement().addEventListener("click", () => {
-        this._flipCard(card);
+    if (this._cards) {
+      this._cards = this._cards.map(
+        (card) => new CardComponent(card._id, card.matched, card.flipped)
+      );
+      this._cards.forEach((card) => {
+        if (card.flipped) {
+          card.flipInit();
+        }
       });
+    } else {
+      this._config = await this.fetchConfig();
+      this._cards = this._config.ids.map((id) => new CardComponent(id));
+      await localforage.setItem("cards", JSON.stringify(this._cards.map((card) => {
+        return {
+          _id: card._id,
+          matched: card.matched,
+          flipped: card.flipped
+        };
+      }
+      )));
+    }
+
+    this._boardElement = document.querySelector(".cards");
+
+    this._cards.forEach(card => {
+      this._boardElement.appendChild(card.getElement());
+      card.getElement().addEventListener(
+        "click",
+        () => {
+          this._flipCard(card);
+        }
+      );
     });
-
     this.start();
-  }
-  async fetchConfig() {
-    const response = await fetch(
-      `${environment.api.host}/board?size=${this._size}`
-    );
-    return response.json();
-  }
+  };
 
+  /* method GameComponent.start */
   start() {
     this._startTime = Date.now();
     let seconds = 0;
-    // TODO #template-literals:  use template literals (backquotes)
-    document.querySelector("nav .navbar-title").textContent = `Player: ${
-      this._name
-    }. Elapsed time:${seconds++}`;
+    document.querySelector("nav .navbar-title").textContent =
+      `Player: ${this._name}. Elapsed time: ${seconds++}`;
 
-    this._timer = setInterval(() => {
-      document.querySelector("nav .navbar-title").textContent = `Player: ${
-        this._name
-      }. Elapsed time:${seconds++}`;
-    }, 1000);
-  }
+    this._timer = setInterval(
+      () => {
+        document.querySelector("nav .navbar-title").textContent =
+          `Player: ${this._name}. Elapsed time: ${seconds++}`;
+      },
+      1000
+    );
+  };
 
+  async fetchConfig() {
+    const response = await fetch(`${environment.api.host}/board?size=${this._size}`, {
+      method: 'GET'
+    });
+    console.log(response);
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error(response.status);
+    }
+  };
+
+  /* method GameComponent.goToScore */
   goToScore() {
-    let timeElapsedInSeconds = Math.floor(
+    localforage.removeItem("score");
+    localforage.removeItem("cards");
+    const timeElapsedInSeconds = Math.floor(
       (Date.now() - this._startTime) / 1000
     );
     clearInterval(this._timer);
 
     setTimeout(() => {
-      let scorePage = "./#score";
-      // TODO #template-literals:  use template literals (backquotes)
-      window.location = `${scorePage}?name=${this._name}&size=${this._size}&time=${timeElapsedInSeconds}`;
-    }, 750);
-  }
+      const scorePage = './#score';
+      const time = timeElapsedInSeconds;
+      this._postScore(time);
+      window.location = `${scorePage}?name=${this._name}&size=${this._size}&time=${time}`;
+    },
+      750
+    );
+  };
 
+  /* method GameComponent._flipCard */
   _flipCard(card) {
     if (this._busy) {
       return;
     }
-
+    
     if (card.flipped) {
       return;
     }
@@ -108,25 +146,63 @@ export class GameComponent extends Component {
 
         if (this._matchedPairs === this._size) {
           this.goToScore();
+        } else {
+          localforage.setItem("cards", JSON.stringify(this._cards.map((card) => {
+            return {
+              _id: card._id,
+              matched: card.matched,
+              flipped: card.flipped
+            };
+          })));
+  
+          localforage.setItem("score", JSON.stringify(this._matchedPairs));
         }
       } else {
         this._busy = true;
 
         // cards did not match
         // wait a short amount of time before hiding both cards
-        setTimeout(() => {
-          // hide the cards
-          this._flippedCard.flip();
-          card.flip();
-          this._busy = false;
+        setTimeout(
+          () => {
+            // hide the cards
+            this._flippedCard.flip();
+            card.flip();
+            this._busy = false;
 
-          // reset flipped card for the next turn.
-          this._flippedCard = null;
-        }, 500);
+            // reset flipped card for the next turn.
+            this._flippedCard = null;
+          },
+          500
+        );
       }
     }
+  };
+
+  async _postScore(time) {
+    const score = {
+      name: this._name,
+      size: this._size,
+      time: time
+    };
+    console.log(score);
+    try {
+      const response = await fetch(`${environment.api.host}/scores`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(score),
+      });
+      const data = await response.json();
+      if (response.status === 201) {
+        console.log("Score saved", data);
+      } else {  
+        console.error("Error:", data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
+
 }
 
-// put component in global scope, to be runnable right from the HTML.
-// TODO #import-assets: use ES default import to import images.

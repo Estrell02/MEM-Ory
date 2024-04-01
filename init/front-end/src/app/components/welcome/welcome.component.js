@@ -6,7 +6,7 @@ import "./welcome.component.css";
 
 /* class WelcomeComponent constructor  */
 export class WelcomeComponent extends Component {
-  // TODO #import-html: assign template to this.template
+
   constructor() {
     super(template);
   }
@@ -42,5 +42,3 @@ export class WelcomeComponent extends Component {
   }
 }
 
-// put component in global scope, to be runnable right from the HTML.
-window.WelcomeComponent = WelcomeComponent;

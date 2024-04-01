@@ -6,6 +6,6 @@ export class NavbarComponent extends HTMLElement {
     constructor() {
       super();
       this.innerHTML = template;
-      // ...
+    
     }
   }

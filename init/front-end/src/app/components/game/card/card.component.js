@@ -1,4 +1,4 @@
-import template from "./card.component.html";
+
 import { Component } from "../../../scripts/component";
 import "./card.component.css";
 
@@ -39,12 +39,12 @@ let CARDS_IMAGE = [
   
 export class CardComponent extends Component {
     // is this card flipped?
-    constructor(id) {
+    constructor(id, matched = false, flipped= false) {
       super(CARD_TEMPLATE);
-      this._flipped = false;
+      this._flipped = flipped;
   
       // has the matching card has been discovered already?
-      this.matched = false;
+      this.matched = matched;
   
       this._elt = document.createElement("div");
       this._elt.innerHTML = this.template;
@@ -65,6 +65,11 @@ export class CardComponent extends Component {
       this._imageElt.classList.toggle("flip");
       this._flipped = !this._flipped;
     }
+     
+     /* method CardComponent.flip */
+     flipInit() {
+      this._imageElt.classList.toggle("flip");
+    };
   
     equals(card) {
       return card._id === this._id;
@@ -74,3 +79,5 @@ export class CardComponent extends Component {
       return this._flipped;
     }
   }
+
+ 

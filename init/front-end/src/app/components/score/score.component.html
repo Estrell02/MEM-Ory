@@ -1,35 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>MÈME ory</title>
-    <!-- TODO #npm-bootstrap: change css location to '/node_modules/bootstrap/dist/css/bootstrap.css' -->
-    <!-- link to score controller -->
-    <script src="../../scripts/utils.js"></script>
-    <script src="./score.component.js"></script>
-  </head>
-
-  <body>
-    <section class="overflow-auto flex-grow-1 d-flex flex-column">
-      <div class="container-fluid flex-grow-1">
-        <!-- TODO #shell: keep this element -->
-        <main class="score-cmp">
-          <div class="d-flex p-3">
-            <div class="flex-grow-1">
-              <h3 class="congrats">CONGRATS<br /><span id="name"></span></h3>
-            </div>
-            <div>
-              <!-- TODO #component-images: change image location to './assets/happy_homer.jpg' -->
-              <img src="/src/assets/happy_homer.jpg" class="happy" />
-              <p class="size"><span id="size"></span> pairs</p>
-              <p class="time"><span id="time"></span>s</p>
-            </div>
-          </div>
-        </main>
+<main class="score-cmp">
+  <div class="d-flex p-3">
+    <div class="flex-grow-1">
+      <h3 class="congrats">CONGRATULATIONS !<br /><span id="name"></span></h3>
+      <div class="p-3">
+        <div class="dropdown pb-3">
+          <button class="btn" type="button">
+            Filter
+            <svg
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-caret-down"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
+              />
+            </svg>
+          </button>
+          <div class="dropdown-menu p-2"></div>
+        </div>
+        <table class="table" id="scores">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Names</th>
+              <th scope="col">Time taken</th>
+              <th scope="col">No. of pairs</th>
+            </tr>
+          </thead>
+        </table>
       </div>
-    </section>
-    <script>
-      new ScoreComponent().init();
-    </script>
-  </body>
-</html>
+    </div>
+
+    <div>
+      <img src="/src/assets/happy_homer.jpg" class="happy" />
+      <p class="size">You've played with<span id="size"></span> pairs</p>
+      <p class="time">You record: <span id="time"></span> s</p>
+    </div>
+  </div>
+</main>
